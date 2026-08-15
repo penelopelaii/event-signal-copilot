@@ -2,7 +2,7 @@ import { DEPTH_LABELS, LIQUIDITY_LABELS } from "@/lib/labels";
 import {
   formatDays,
   formatFreshness,
-  formatPct,
+  formatImpliedPct,
   formatPp,
   formatUsdCompact,
 } from "@/lib/format";
@@ -14,14 +14,21 @@ export default function MarketSignalPanel({
 }: {
   evaluation: Evaluation;
 }) {
-  const { event, primary, daysToResolution } = evaluation;
+  const { event, primary, daysToResolution, provenance, depthDetail } = evaluation;
+  const fields = provenance.fields;
   const ranked = [...event.outcomes].sort(
     (a, b) => b.impliedProbability - a.impliedProbability,
   );
 
   return (
     <section className="panel p-5 sm:p-7">
-      <SectionLabel aside="Synthetic market fields">
+      <SectionLabel
+        aside={
+          provenance.mode === "live"
+            ? "Live and derived market fields"
+            : "Synthetic market fields"
+        }
+      >
         Market-implied view
       </SectionLabel>
 
@@ -53,7 +60,12 @@ export default function MarketSignalPanel({
                 </span>
               </span>
               <span className="font-mono tabular-nums text-ink">
-                {formatPct(outcome.impliedProbability)}
+                {formatImpliedPct(outcome.impliedProbability)}
+                {active && fields.impliedProbability ? (
+                  <span className="ml-2 font-mono text-[0.58rem] tracking-[0.12em] uppercase text-muted">
+                    {fields.impliedProbability.origin}
+                  </span>
+                ) : null}
               </span>
             </li>
           );
@@ -66,23 +78,55 @@ export default function MarketSignalPanel({
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <Metric
           label="7d change"
-          value={formatPp(event.change7dPp)}
-          hint={`24h ${formatPp(event.change24hPp)} · 30d ${formatPp(event.change30dPp)}`}
+          value={
+            fields.change7d?.origin === "unavailable"
+              ? "Unavailable"
+              : formatPp(event.change7dPp)
+          }
+          hint={
+            fields.change24h?.origin === "unavailable"
+              ? "24h / 30d history unavailable"
+              : `24h ${formatPp(event.change24hPp)} · 30d ${formatPp(event.change30dPp)}`
+          }
+          origin={fields.change7d?.origin}
         />
         <Metric
           label="Spread"
-          value={`${event.market.spreadPct.toFixed(1)}%`}
-          hint="Quoted width, synthetic"
+          value={
+            fields.spread?.origin === "unavailable"
+              ? "Unavailable"
+              : `${event.market.spreadPct.toFixed(1)}%`
+          }
+          hint={fields.spread?.note ?? "Quoted width"}
+          origin={fields.spread?.origin}
         />
         <Metric
           label="Liquidity"
-          value={LIQUIDITY_LABELS[event.market.liquidity]}
-          hint={`${formatUsdCompact(event.market.volumeUsd)} volume`}
+          value={
+            fields.liquidity?.origin === "unavailable"
+              ? "Unavailable"
+              : LIQUIDITY_LABELS[event.market.liquidity]
+          }
+          hint={
+            fields.volume?.origin === "unavailable"
+              ? "Volume unavailable"
+              : `${formatUsdCompact(event.market.volumeUsd)} volume`
+          }
+          origin={fields.liquidity?.origin}
         />
         <Metric
           label="Depth"
-          value={DEPTH_LABELS[event.market.depth]}
-          hint="Size without moving the quote"
+          value={
+            fields.depth?.origin === "unavailable"
+              ? "Unavailable"
+              : DEPTH_LABELS[event.market.depth]
+          }
+          hint={
+            depthDetail
+              ? `Two-way notional ${formatUsdCompact(depthDetail.twoWayNotionalDepth)} within ±${depthDetail.bandPp}pp (thinner side)`
+              : (fields.depth?.note ?? "Size without moving the quote")
+          }
+          origin={fields.depth?.origin}
         />
         <Metric
           label="Time to resolution"
@@ -91,8 +135,13 @@ export default function MarketSignalPanel({
         />
         <Metric
           label="Freshness"
-          value={formatFreshness(event.market.freshnessMinutes)}
+          value={
+            fields.freshness?.origin === "unavailable"
+              ? "Unavailable"
+              : formatFreshness(event.market.freshnessMinutes)
+          }
           hint={event.market.lastUpdateLabel}
+          origin={fields.freshness?.origin}
         />
       </div>
     </section>

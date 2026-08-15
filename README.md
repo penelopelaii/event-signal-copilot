@@ -37,7 +37,10 @@ Signal Quality is a deterministic TypeScript engine. It is not a probability for
 | Cross-market confirmation | Do other sources broadly agree? |
 | Participation | How broad vs. concentrated is the book? (synthetic proxy) |
 
-**Outcome probability ≠ signal quality.** A market can show 80% while still being a weak signal if liquidity is poor, the spread is wide, or resolution criteria are ambiguous.
+**Outcome probability ≠ signal quality.**
+**Signal quality ≠ evidence coverage.**
+
+A market can show a high implied probability, a strong model score, and still have incomplete evidence. Those three facts must stay separate.
 
 Labels (synthetic thresholds, not empirically calibrated):
 
@@ -68,7 +71,23 @@ v1 uses synthetic event profiles. Scores below are produced by the Signal Qualit
 | Regulatory ruling | 46 | Weak Signal |
 | Recession | 65 | Mixed Signal |
 
+## Live data
+
+v1.0.0 is the synthetic research prototype. The live-data branch adds a read-only external event-market input without changing the Signal Quality Engine.
+
+- Polymarket is the first live source.
+- Gamma API is used for market and event discovery.
+- Public CLOB read endpoints are used for midpoint, spread, order book, and price history.
+- Live inputs are normalized into the same internal types and the same deterministic Signal Quality Engine.
+- No trading or authenticated endpoints are used. No API key, wallet, or private credential is required.
+
+Signal Quality and Data Coverage are separate. Missing data is not treated as observed neutral evidence. Neutral numeric fallbacks may be used internally so the existing engine can run; they are excluded from evidence coverage and labeled unavailable.
+
+Live depth is two-way notional order-book depth within ±2 percentage points of midpoint: `min(bid notional, ask notional)`, where notional is `price × size`. Resolution clarity is not inferred from metadata completeness. Live single-source mode still lacks independent cross-market confirmation.
+
 v1 uses synthetic inputs. The data layer is structured for future read-only integrations with event markets, macro data, rates, yields, and options-derived signals.
+
+Signal Quality remains a synthetic research framework and is not empirically calibrated.
 
 ## Relationship to PrivatePerp and Listing Readiness Simulator
 
@@ -80,8 +99,8 @@ v1 uses synthetic inputs. The data layer is structured for future read-only inte
 
 ## Disclaimer
 
-This is a research prototype. Signal Quality scores are synthetic. Thresholds are not empirically calibrated. Event probabilities in v1 come from synthetic data.
+This is a research prototype. Signal Quality scores are synthetic. Thresholds are not empirically calibrated. Event probabilities may come from synthetic presets or from live public market data.
 
 This product does not predict outcomes. It does not execute trades. Nothing here is investment advice.
 
-Market signals may be noisy, illiquid, manipulated, stale, or structurally unreliable.
+Market signals — including live market data — may be noisy, illiquid, manipulated, stale, incomplete, or structurally unreliable.

@@ -7,7 +7,8 @@ export default function SignalQualityPanel({
 }: {
   evaluation: Evaluation;
 }) {
-  const { quality } = evaluation;
+  const { quality, provenance, coverage } = evaluation;
+  const fieldOrigin = (key: string) => provenance.fields[key]?.origin;
 
   return (
     <section className="panel-focus p-5 sm:p-7">
@@ -32,6 +33,33 @@ export default function SignalQualityPanel({
         </div>
       </div>
 
+      <div className="mb-5 grid gap-px bg-stroke sm:grid-cols-2">
+        <div className="bg-panel px-4 py-3">
+          <p className="m-0 mb-1 font-mono text-[0.62rem] tracking-[0.12em] uppercase text-muted">
+            Data coverage
+          </p>
+          <p className="m-0 font-mono text-[1.35rem] tracking-[-0.03em] tabular-nums">
+            {coverage.dataCoverage}%
+          </p>
+          <p className="mt-1 mb-0 text-[0.72rem] text-muted">
+            {coverage.coverageLabel} · {coverage.observedCount}/{coverage.expectedCount} dimensions
+          </p>
+        </div>
+        <div className="bg-panel px-4 py-3">
+          <p className="m-0 mb-1 font-mono text-[0.62rem] tracking-[0.12em] uppercase text-muted">
+            Evidence status
+          </p>
+          <p className="m-0 text-[1.05rem] font-medium tracking-[-0.02em]">
+            {coverage.isProvisional ? "Provisional" : "Complete"}
+          </p>
+          <p className="mt-1 mb-0 text-[0.72rem] text-muted">
+            {coverage.isProvisional
+              ? "The score is the model output from currently available evidence. Missing dimensions are not treated as observed."
+              : "Every scored dimension has specified evidence."}
+          </p>
+        </div>
+      </div>
+
       <p className="mt-0 mb-5 max-w-[62ch] text-[0.9rem] leading-[1.6] text-ink/80">
         {quality.summary} {QUALITY_COPY[quality.label]}
       </p>
@@ -46,6 +74,7 @@ export default function SignalQualityPanel({
             key={row.key}
             label={row.label}
             value={quality.subscores[row.key]}
+            origin={fieldOrigin(row.key)}
           />
         ))}
       </ul>

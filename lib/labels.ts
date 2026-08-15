@@ -15,6 +15,7 @@ export const CATEGORY_LABELS: Record<EventCategory, string> = {
   legal: "Legal",
   corporate: "Corporate",
   macro_regime: "Macro regime",
+  other: "Uncategorized",
 };
 
 export const LIQUIDITY_LABELS: Record<LiquidityLevel, string> = {

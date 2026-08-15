@@ -1,5 +1,5 @@
 import { AGREEMENT_LABELS } from "@/lib/labels";
-import { formatPct } from "@/lib/format";
+import { formatImpliedPct } from "@/lib/format";
 import type { Evaluation } from "@/lib/types";
 import { SectionLabel } from "./ui";
 
@@ -8,7 +8,7 @@ export default function CrossMarketView({
 }: {
   evaluation: Evaluation;
 }) {
-  const { crossMarket, primary } = evaluation;
+  const { crossMarket, primary, provenance } = evaluation;
   const rows = [
     {
       id: "event",
@@ -26,11 +26,28 @@ export default function CrossMarketView({
         Cross-market view
       </SectionLabel>
       <p className="mt-0 mb-5 max-w-[68ch] text-[0.85rem] leading-relaxed text-muted">
-        Secondary sources are synthetic in v1. The point is to expose whether
-        other markets and data objects rhyme with the event-implied reading —
-        not to declare one of them correct.
+        {crossMarket.available
+          ? "Secondary sources are compared to expose disagreement — not to declare one of them correct."
+          : "Cross-market confirmation needs a second independent source. Complementary outcomes on the same market are not treated as confirmation."}
       </p>
 
+      {!crossMarket.available ? (
+        <div className="border-l-2 border-ink bg-inset px-4 py-3">
+          <p className="m-0 mb-1 font-mono text-[0.62rem] tracking-[0.12em] uppercase text-muted">
+            Agreement
+          </p>
+          <p className="m-0 text-[1.05rem] font-medium">Unavailable</p>
+          <p className="mt-2 mb-0 max-w-[68ch] text-[0.82rem] leading-relaxed text-muted">
+            {crossMarket.explanation}
+          </p>
+          {provenance.fields.crossMarket?.note ? (
+            <p className="mt-2 mb-0 text-[0.72rem] text-muted">
+              {provenance.fields.crossMarket.note}
+            </p>
+          ) : null}
+        </div>
+      ) : (
+        <>
       <div className="mb-5 grid gap-px bg-stroke sm:grid-cols-2">
         <div className="bg-panel px-4 py-3">
           <p className="m-0 mb-1 font-mono text-[0.62rem] tracking-[0.12em] uppercase text-muted">
@@ -76,7 +93,7 @@ export default function CrossMarketView({
                 </td>
                 <td className="py-3 pr-3">
                   <span className="mb-1.5 block font-mono tabular-nums">
-                    {formatPct(row.probability)}
+                    {formatImpliedPct(row.probability)}
                   </span>
                   <span className="block h-1 w-28 overflow-hidden bg-stroke sm:w-36">
                     <span
@@ -95,6 +112,8 @@ export default function CrossMarketView({
       <p className="m-0 max-w-[70ch] border-l-2 border-ink pl-4 text-[0.9rem] leading-[1.6]">
         {crossMarket.explanation}
       </p>
+        </>
+      )}
     </section>
   );
 }

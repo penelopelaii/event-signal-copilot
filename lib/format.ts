@@ -10,6 +10,12 @@ export function formatPct(value: number, digits = 0): string {
   return `${value.toFixed(digits)}%`;
 }
 
+export function formatImpliedPct(value: number): string {
+  if (value > 0 && value < 1) return formatPct(value, 2);
+  if (value < 10) return formatPct(value, 1);
+  return formatPct(value, 0);
+}
+
 export function formatPp(value: number, digits = 0): string {
   const rounded = Number(value.toFixed(digits));
   const sign = rounded > 0 ? "+" : "";
@@ -23,8 +29,16 @@ export function formatUsdCompact(value: number): string {
   return `$${value.toFixed(0)}`;
 }
 
+export function parseInstant(isoDate: string): Date {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
+    return new Date(`${isoDate}T00:00:00Z`);
+  }
+  return new Date(isoDate);
+}
+
 export function daysToResolution(isoDate: string, asOf = new Date()): number {
-  const ms = new Date(`${isoDate}T00:00:00Z`).getTime() - asOf.getTime();
+  const ms = parseInstant(isoDate).getTime() - asOf.getTime();
+  if (Number.isNaN(ms)) return 0;
   return Math.max(0, Math.round(ms / 86_400_000));
 }
 
@@ -35,7 +49,8 @@ export function formatDays(days: number): string {
 }
 
 export function formatDate(isoDate: string): string {
-  const date = new Date(`${isoDate}T00:00:00Z`);
+  const date = parseInstant(isoDate);
+  if (Number.isNaN(date.getTime())) return isoDate;
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",

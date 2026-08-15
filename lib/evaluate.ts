@@ -1,8 +1,10 @@
 import { evaluateCrossMarket } from "./crossMarket";
 import { generateBrief } from "./briefGenerator";
+import { maskUnavailableEvidence, measureCoverage } from "./dataCoverage";
 import { daysToResolution } from "./format";
+import { syntheticProvenance } from "./provenance";
 import { evaluateSignalQuality } from "./signalQualityEngine";
-import type { Evaluation, EventPreset } from "./types";
+import type { Evaluation, EventPreset, LiveMarketPacket } from "./types";
 
 export function evaluatePreset(
   preset: EventPreset,
@@ -30,7 +32,17 @@ export function evaluatePreset(
     crossMarketDisagreementPp: crossMarket.disagreementPp,
     timeToResolutionDays: days,
   });
-  const brief = generateBrief(event, primary, quality, crossMarket, exposures);
+  const provenance = syntheticProvenance();
+  const coverage = measureCoverage(provenance);
+  const brief = generateBrief(
+    event,
+    primary,
+    quality,
+    crossMarket,
+    exposures,
+    provenance,
+    coverage,
+  );
 
   return {
     event,
@@ -40,5 +52,49 @@ export function evaluatePreset(
     crossMarket,
     exposures,
     brief,
+    provenance,
+    coverage,
+  };
+}
+
+export function evaluateLive(
+  packet: LiveMarketPacket,
+  asOf = new Date(),
+): Evaluation {
+  const { event, qualityInput, provenance, crossMarket } = packet;
+  const primary = event.outcomes.find((row) => row.id === event.primaryOutcomeId);
+  if (!primary) {
+    throw new Error(`Live market ${event.id} is missing its primary outcome.`);
+  }
+
+  const days = daysToResolution(event.resolutionDate, asOf);
+  const rawQuality = evaluateSignalQuality({
+    ...qualityInput,
+    timeToResolutionDays: days,
+  });
+  const coverage = measureCoverage(provenance);
+  const quality = maskUnavailableEvidence(rawQuality, provenance);
+  const brief = generateBrief(
+    event,
+    primary,
+    quality,
+    crossMarket,
+    [],
+    provenance,
+    coverage,
+  );
+
+  return {
+    event,
+    primary,
+    daysToResolution: days,
+    quality,
+    crossMarket,
+    exposures: [],
+    brief,
+    provenance,
+    coverage,
+    depthDetail: packet.depthDetail,
+    resolutionMetadataComplete: packet.resolutionMetadataComplete,
   };
 }

@@ -31,7 +31,7 @@ async function unavailable(): Promise<null> {
 
 export const polymarketAdapter: EventMarketAdapter = {
   id: "polymarket",
-  label: "Polymarket (not wired)",
+  label: "Polymarket (live, read-only via /api/live)",
   fetchEvent: unavailable,
   fetchMarketSignal: unavailable,
 };

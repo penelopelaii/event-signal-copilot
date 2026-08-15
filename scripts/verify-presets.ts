@@ -12,6 +12,8 @@ const rows = PRESETS.map((preset) => {
     agreement: evaluation.crossMarket.agreement,
     disagreement: evaluation.crossMarket.disagreementPp,
     failures: evaluation.quality.failureModes.map((mode) => mode.code).join(" "),
+    coverage: evaluation.coverage.dataCoverage,
+    provisional: evaluation.coverage.isProvisional,
   };
 });
 
@@ -31,6 +33,10 @@ if (high.length === rows.length) {
 const weak = rows.filter((row) => row.score < 70);
 if (weak.length === 0) {
   throw new Error("Expected at least one preset below Moderately Strong.");
+}
+
+if (rows.some((row) => row.coverage !== 100 || row.provisional)) {
+  throw new Error("Synthetic presets must have complete evidence coverage.");
 }
 
 console.log("Preset checks passed.");

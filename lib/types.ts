@@ -5,7 +5,43 @@ export type EventCategory =
   | "regulatory"
   | "legal"
   | "corporate"
-  | "macro_regime";
+  | "macro_regime"
+  | "other";
+
+export type DataMode = "synthetic" | "live";
+export type DataOrigin = "live" | "synthetic" | "derived" | "unavailable";
+
+export interface FieldProvenance {
+  origin: DataOrigin;
+  note?: string;
+  method?: string;
+  isFallback?: boolean;
+}
+
+export type CoverageLabel = "High coverage" | "Moderate coverage" | "Low coverage";
+
+export interface DataCoverage {
+  dataCoverage: number;
+  coverageLabel: CoverageLabel;
+  isProvisional: boolean;
+  observedCount: number;
+  expectedCount: number;
+  unavailable: string[];
+}
+
+export interface DepthDetail {
+  bidNotionalDepth: number;
+  askNotionalDepth: number;
+  twoWayNotionalDepth: number;
+  bandPp: number;
+}
+
+export interface EvaluationProvenance {
+  mode: DataMode;
+  sourceLabel: string;
+  sourceDetail?: string;
+  fields: Record<string, FieldProvenance>;
+}
 
 export type LiquidityLevel = "high" | "moderate" | "low" | "thin";
 export type DepthLevel = "deep" | "moderate" | "shallow" | "thin";
@@ -56,7 +92,7 @@ export interface EventProfile {
   market: MarketSignal;
   resolutionClarity: number;
   whatWouldChange: string[];
-  synthetic: true;
+  synthetic: boolean;
 }
 
 export interface SignalQualityInput {
@@ -119,7 +155,8 @@ export interface CrossMarketSignal {
   agreement: AgreementLevel;
   disagreementPp: number;
   explanation: string;
-  synthetic: true;
+  synthetic: boolean;
+  available: boolean;
 }
 
 export interface Exposure {
@@ -149,6 +186,29 @@ export interface EventPreset {
   exposures: Exposure[];
 }
 
+export interface LiveSearchResult {
+  marketId: string;
+  eventId: string;
+  eventTitle: string;
+  question: string;
+  impliedProbability: number | null;
+  endDate: string | null;
+  volumeUsd: number | null;
+  liquidityUsd: number | null;
+  active: boolean;
+  closed: boolean;
+}
+
+export interface LiveMarketPacket {
+  event: EventProfile;
+  qualityInput: SignalQualityInput;
+  provenance: EvaluationProvenance;
+  crossMarket: CrossMarketSignal;
+  warnings: string[];
+  depthDetail?: DepthDetail;
+  resolutionMetadataComplete?: boolean;
+}
+
 export interface Evaluation {
   event: EventProfile;
   primary: Outcome;
@@ -157,4 +217,8 @@ export interface Evaluation {
   crossMarket: CrossMarketSignal;
   exposures: Exposure[];
   brief: ResearchBrief;
+  provenance: EvaluationProvenance;
+  coverage: DataCoverage;
+  depthDetail?: DepthDetail;
+  resolutionMetadataComplete?: boolean;
 }

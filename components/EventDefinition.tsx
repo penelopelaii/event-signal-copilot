@@ -4,7 +4,7 @@ import type { Evaluation } from "@/lib/types";
 import { SectionLabel } from "./ui";
 
 export default function EventDefinition({ evaluation }: { evaluation: Evaluation }) {
-  const { event, primary, daysToResolution } = evaluation;
+  const { event, primary, daysToResolution, provenance } = evaluation;
 
   return (
     <section className="panel mb-8 p-5 sm:p-7">
@@ -59,9 +59,9 @@ export default function EventDefinition({ evaluation }: { evaluation: Evaluation
         </div>
         <div className="bg-panel px-4 py-3">
           <p className="m-0 mb-1 font-mono text-[0.62rem] tracking-[0.12em] uppercase text-muted">
-            Data
+            Source
           </p>
-          <p className="m-0 text-[0.95rem]">Synthetic v1 preset</p>
+          <p className="m-0 text-[0.95rem]">{provenance.sourceLabel}</p>
         </div>
       </div>
     </section>

@@ -30,7 +30,13 @@ export default function ResearchBrief({
 
   return (
     <section className="panel mt-8 p-5 sm:p-7">
-      <SectionLabel aside="Deterministic synthesis · not an LLM">
+      <SectionLabel
+        aside={
+          evaluation.provenance.mode === "live"
+            ? "Deterministic synthesis · live inputs"
+            : "Deterministic synthesis · not an LLM"
+        }
+      >
         Research brief
       </SectionLabel>
       <p className="mt-0 mb-6 max-w-[70ch] text-[0.85rem] leading-relaxed text-muted">

@@ -14,12 +14,12 @@ export default function ExposureMap({
         Exposures to watch
       </SectionLabel>
       <p className="mt-0 mb-5 max-w-[70ch] text-[0.85rem] leading-relaxed text-muted">
-        If “{primary.label}” becomes more likely, these are the financial
-        objects most often cited as sensitive. Directional notes are structural
-        associations. They are not recommendations to buy, sell, or size a
-        position.
+        {exposures.length === 0
+          ? "No exposure map is attached to this live market. Exposure maps remain a synthetic-preset research layer."
+          : `If “${primary.label}” becomes more likely, these are the financial objects most often cited as sensitive. Directional notes are structural associations, not instructions to size a position.`}
       </p>
 
+      {exposures.length === 0 ? null : (
       <div className="-mx-5 overflow-x-auto px-5 sm:-mx-7 sm:px-7">
         <table className="w-full min-w-[640px] border-collapse text-left text-[0.82rem]">
           <thead>
@@ -48,6 +48,7 @@ export default function ExposureMap({
           </tbody>
         </table>
       </div>
+      )}
     </section>
   );
 }

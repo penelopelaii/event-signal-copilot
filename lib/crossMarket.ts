@@ -65,5 +65,6 @@ export function evaluateCrossMarket(
     disagreementPp: Math.round(disagreementPp),
     explanation,
     synthetic: true,
+    available: sources.length > 0,
   };
 }
