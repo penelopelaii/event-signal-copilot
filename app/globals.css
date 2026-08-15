@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: #f5f4f1;
+  --color-panel: #ffffff;
+  --color-stroke: #d6d6d6;
+  --color-ink: #111111;
+  --color-muted: #5c5c5c;
+  --color-accent: #111111;
+  --color-ok: #111111;
+  --color-warn: #3f3f3f;
+  --color-caution: #6a6a6a;
+  --color-danger: #111111;
+  --color-inset: #efefef;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+input[type="search"],
+input[type="text"] {
+  width: 100%;
+  appearance: none;
+  background: var(--color-panel);
+  color: var(--color-ink);
+  border: 1px solid var(--color-stroke);
+  border-radius: 0;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+input[type="search"]:focus,
+input[type="text"]:focus {
+  outline: 1px solid var(--color-ink);
+  outline-offset: 1px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.panel {
+  background: var(--color-panel);
+  border: 1px solid var(--color-stroke);
+  box-shadow:
+    0 1px 1px rgb(17 17 17 / 3%),
+    0 10px 28px rgb(17 17 17 / 4.5%);
+}
+
+.panel-focus {
+  background: var(--color-panel);
+  border: 1px solid rgb(17 17 17 / 28%);
+  box-shadow:
+    0 1px 1px rgb(17 17 17 / 4%),
+    0 18px 40px rgb(17 17 17 / 7%);
+}
+
+.art-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.art-bg__blob {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.art-bg__blob--a {
+  width: 70vmax;
+  height: 70vmax;
+  top: -28vmax;
+  left: -18vmax;
+  background: radial-gradient(
+    circle at 40% 40%,
+    rgb(17 17 17 / 7%) 0%,
+    rgb(17 17 17 / 0%) 68%
+  );
+  animation: art-drift-a 80s ease-in-out infinite alternate;
+}
+
+.art-bg__blob--b {
+  width: 58vmax;
+  height: 58vmax;
+  top: 18%;
+  right: -22vmax;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(17 17 17 / 5.5%) 0%,
+    rgb(17 17 17 / 0%) 70%
+  );
+  animation: art-drift-b 96s ease-in-out infinite alternate;
+}
+
+.art-bg__blob--c {
+  width: 62vmax;
+  height: 62vmax;
+  bottom: -30vmax;
+  left: 18%;
+  background: radial-gradient(
+    circle at 45% 45%,
+    rgb(17 17 17 / 6%) 0%,
+    rgb(17 17 17 / 0%) 68%
+  );
+  animation: art-drift-c 88s ease-in-out infinite alternate;
+}
+
+.art-bg__grid {
+  position: absolute;
+  inset: -6%;
+  background-image:
+    linear-gradient(rgb(17 17 17 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(17 17 17 / 5%) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 32%, #000 18%, transparent 82%);
+  animation: art-grid 48s ease-in-out infinite alternate;
+}
+
+.art-bg__dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(17 17 17 / 11%) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.32;
+}
+
+.art-bg__grain {
+  position: absolute;
+  inset: -8%;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: art-grain 26s steps(6) infinite;
+}
+
+.art-bg__contours {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.art-bg__contour {
+  fill: none;
+  stroke: rgb(17 17 17 / 16%);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.art-bg__contour--a {
+  stroke-width: 1.15;
+  stroke-dasharray: 7 20;
+  animation: art-contour 110s linear infinite;
+}
+
+.art-bg__contour--b {
+  stroke-width: 0.9;
+  opacity: 0.75;
+  stroke-dasharray: 4 16;
+  animation: art-contour 130s linear infinite reverse;
+}
+
+.art-bg__contour--c {
+  stroke-width: 0.9;
+  opacity: 0.7;
+  stroke-dasharray: 3 14;
+  animation: art-contour 120s linear infinite;
+}
+
+.art-bg__contour--d {
+  stroke-width: 0.75;
+  opacity: 0.55;
+  stroke-dasharray: 2 12;
+  animation: art-contour 140s linear infinite reverse;
+}
+
+@keyframes art-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(5%, 4%, 0) scale(1.04);
+  }
+}
+
+@keyframes art-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-4%, 4%, 0) scale(1.03);
+  }
+}
+
+@keyframes art-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4%, -5%, 0) scale(1.04);
+  }
+}
+
+@keyframes art-contour {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 220;
+  }
+}
+
+@keyframes art-grid {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  to {
+    transform: translate3d(-1.8%, 1.2%, 0) rotate(0.35deg) scale(1.04);
+  }
+}
+
+@keyframes art-grain {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-1.5%, 1%, 0);
+  }
+}
+
+@media (max-width: 700px) {
+  .art-bg__blob--c,
+  .art-bg__contour--d {
+    display: none;
+  }
+
+  .art-bg__grid {
+    background-size: 56px 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art-bg__blob,
+  .art-bg__contour,
+  .art-bg__grain,
+  .art-bg__grid {
+    animation: none;
+  }
+}
